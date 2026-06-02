@@ -27,7 +27,7 @@ export const initialState: GameStateData = {
       traits: ["Diligent", "Compassionate", "Stubborn"],
       background:
         "Before the Collapse, a botanist and researcher in agricultural systems. Has kept the crops alive through countless crises.",
-      portrait: "/assets/crew/character1.png",
+      portrait: "/Long-Now/assets/crew/character1.png",
       history: [
         { with: "Dr. Elias Vance", text: "We argued for a week about nutrient ratios. He was right. I still won't admit it." },
         { with: "Samir Okonkwo", text: "He swears my tomatoes taste of rust. He's not wrong — but he keeps asking for more." },
@@ -42,7 +42,7 @@ export const initialState: GameStateData = {
       traits: ["Steady", "Lone Wolf"],
       background:
         "A born repairman with a handmade prosthetic arm. Trusts machines more than people.",
-      portrait: "/assets/crew/character2.png",
+      portrait: "/Long-Now/assets/crew/character2.png",
       history: [
         { with: "Bjorn Hale", text: "Bjorn forged me a new wrench when mine snapped in the reactor. Didn't say a word — just left it on my bunk." },
       ],
@@ -56,7 +56,7 @@ export const initialState: GameStateData = {
       traits: ["Leader", "Coward"],
       background:
         "Ex-bounty hunter in salvaged riot gear. Keeps order aboard — steel nerves, a soft spot for the young.",
-      portrait: "/assets/crew/character3.png",
+      portrait: "/Long-Now/assets/crew/character3.png",
       state: { energy: 58, hunger: 61, health: 69, morale: 52 },
     },
     {
@@ -67,7 +67,7 @@ export const initialState: GameStateData = {
       traits: ["Observant", "Insomniac"],
       background:
         "A systems researcher obsessed with the O₂ and hydroponics rigs. Sleeps little, theorizes much.",
-      portrait: "/assets/crew/character4.png",
+      portrait: "/Long-Now/assets/crew/character4.png",
       history: [
         { with: "Mara Kovalenko", text: "Mara keeps the gardens alive on instinct. I keep telling her it's chemistry. She just smiles." },
       ],
@@ -81,7 +81,7 @@ export const initialState: GameStateData = {
       traits: ["Optimist"],
       background:
         "Runs the galley with a grin. A good meal, he says, is the only morale that lasts.",
-      portrait: "/assets/crew/character5.png",
+      portrait: "/Long-Now/assets/crew/character5.png",
       history: [
         { with: "Mira Koval", text: "Mira never smiles at the table — until the day I made stew from the last real onion. Almost." },
       ],
@@ -94,7 +94,7 @@ export const initialState: GameStateData = {
       accent: ACCENT.orange,
       traits: ["Steady", "Resilient"],
       background: "Forge and heavy repair. If it's bent, he'll beat it straight.",
-      portrait: "/assets/crew/character6.png",
+      portrait: "/Long-Now/assets/crew/character6.png",
       state: { energy: 66, hunger: 52, health: 71, morale: 58 },
     },
     {
@@ -104,7 +104,7 @@ export const initialState: GameStateData = {
       accent: ACCENT.blue,
       traits: ["Resilient"],
       background: "Worked the drowned coasts before MARA. Reads the water like a book.",
-      portrait: "/assets/crew/character7.png",
+      portrait: "/Long-Now/assets/crew/character7.png",
       state: { energy: 64, hunger: 40, health: 80, morale: 66 },
       exploringReturnsIn: 4 * 3600 + 12 * 60 + 30,
     },
@@ -115,7 +115,7 @@ export const initialState: GameStateData = {
       accent: ACCENT.steel,
       traits: ["Resilient", "Insomniac"],
       background: "Survives where others can't. Brings back salvage and rumors.",
-      portrait: "/assets/crew/character8.png",
+      portrait: "/Long-Now/assets/crew/character8.png",
       state: { energy: 70, hunger: 55, health: 62, morale: 48 },
       // single expedition party — same return time as the others exploring
       exploringReturnsIn: 4 * 3600 + 12 * 60 + 30,
@@ -132,7 +132,7 @@ export const initialState: GameStateData = {
       level: 1,
       produces: "Power",
       consumes: "—",
-      sceneBase: "/assets/rooms/generator",
+      sceneBase: "/Long-Now/assets/rooms/generator",
       sceneLevels: 3,
       workSlots: [],
       upgradeSlots: [null],
@@ -150,7 +150,7 @@ export const initialState: GameStateData = {
       variant: "Algae",
       produces: "O₂",
       consumes: "Water + light",
-      sceneBase: "/assets/rooms/algae",
+      sceneBase: "/Long-Now/assets/rooms/algae",
       sceneLevels: 3,
       workSlots: [],
       upgradeSlots: [null],
@@ -168,7 +168,7 @@ export const initialState: GameStateData = {
       variant: "Garden · Hydroponics",
       produces: "Food",
       consumes: "Water + light",
-      sceneBase: "/assets/rooms/hydroponics",
+      sceneBase: "/Long-Now/assets/rooms/hydroponics",
       sceneLevels: 3,
       workSlots: ["mara", null, null],
       upgradeSlots: [null],
@@ -186,7 +186,7 @@ export const initialState: GameStateData = {
       variant: "Piscifactoría",
       produces: "Food",
       consumes: "Power + Salvage",
-      sceneBase: "/assets/rooms/pisifactory",
+      sceneBase: "/Long-Now/assets/rooms/pisifactory",
       sceneLevels: 2,
       specGateLevel: 2,
       specChoices: [
@@ -195,7 +195,7 @@ export const initialState: GameStateData = {
           label: "Selective Fishing",
           desc: "Sustainable, steady yield, fewer events.",
           cost: "Salvage 120 · 1 crew",
-          sceneBase: "/assets/rooms/fishing",
+          sceneBase: "/Long-Now/assets/rooms/fishing",
           sceneLevels: 2,
         },
         {
@@ -203,7 +203,7 @@ export const initialState: GameStateData = {
           label: "Trawling",
           desc: "Big hauls, +exterior risk, depletes the grounds.",
           cost: "Salvage 140 · 1 crew",
-          sceneBase: "/assets/rooms/trawling",
+          sceneBase: "/Long-Now/assets/rooms/trawling",
           sceneLevels: 2,
         },
       ],
@@ -223,7 +223,7 @@ export const initialState: GameStateData = {
       variant: "Desalinator",
       produces: "Water",
       consumes: "Power",
-      sceneBase: "/assets/rooms/desalination",
+      sceneBase: "/Long-Now/assets/rooms/desalination",
       sceneLevels: 3,
       workSlots: ["mira"],
       upgradeSlots: [null],
@@ -240,7 +240,7 @@ export const initialState: GameStateData = {
       level: 1,
       produces: "Rest / Meals",
       consumes: "Food (when eating)",
-      sceneBase: "/assets/rooms/habitat",
+      sceneBase: "/Long-Now/assets/rooms/habitat",
       sceneLevels: 1,
       workSlots: [null, null],
       upgradeSlots: [null],
@@ -257,7 +257,7 @@ export const initialState: GameStateData = {
       level: 1,
       produces: "Repair / Expedition",
       consumes: "Salvage",
-      sceneBase: "/assets/rooms/workshop",
+      sceneBase: "/Long-Now/assets/rooms/workshop",
       sceneLevels: 3,
       workSlots: ["griff"],
       upgradeSlots: [null, null],
@@ -275,7 +275,7 @@ export const initialState: GameStateData = {
       variant: "Biological",
       produces: "Healing / Research",
       consumes: "Med",
-      sceneBase: "/assets/rooms/infirmary",
+      sceneBase: "/Long-Now/assets/rooms/infirmary",
       sceneLevels: 1,
       workSlots: [null, null],
       upgradeSlots: [],

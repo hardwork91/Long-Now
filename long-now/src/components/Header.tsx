@@ -14,10 +14,10 @@ function Gauge({
   return (
     <div className={`gauge${critical ? " crit" : ""}`}>
       <div className="dial">
-        <img className="dial-face" src="/assets/ui/Dial.png" alt="" draggable={false} />
+        <img className="dial-face" src="/Long-Now/assets/ui/Dial.png" alt="" draggable={false} />
         <img
           className="dial-needle"
-          src="/assets/ui/Dial-needle.png"
+          src="/Long-Now/assets/ui/Dial-needle.png"
           alt=""
           draggable={false}
           style={{ transform: `rotate(${deg}deg)` }}
@@ -49,8 +49,8 @@ export default function Header() {
       </div>
 
       <div className="sonar" title="Sonar — external alerts">
-        <img className="sonar-face" src="/assets/ui/sonar.png" alt="" draggable={false} />
-        <img className="sonar-wave" src="/assets/ui/sonar-wave.png" alt="" draggable={false} />
+        <img className="sonar-face" src="/Long-Now/assets/ui/sonar.png" alt="" draggable={false} />
+        <img className="sonar-wave" src="/Long-Now/assets/ui/sonar-wave.png" alt="" draggable={false} />
       </div>
     </div>
   );

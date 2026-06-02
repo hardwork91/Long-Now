@@ -15,7 +15,7 @@ export default function ResourceBar() {
         <div className="res metal" key={r.key}>
           <img
             className="ricon"
-            src={`/assets/ui/${r.key}.png`}
+            src={`/Long-Now/assets/ui/${r.key}.png`}
             alt=""
             draggable={false}
           />

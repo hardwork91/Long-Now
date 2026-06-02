@@ -71,7 +71,7 @@ body {
   inset: 0;
   pointer-events: none;
   border: 10px solid transparent;
-  border-image: url("/assets/ui/frame9.png") 36 / 10px / 0 repeat;
+  border-image: url("/Long-Now/assets/ui/frame9.png") 36 / 10px / 0 repeat;
   border-radius: 5px;
   z-index: 5;
 }
@@ -95,7 +95,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; }
 button {
   font-family: inherit;
   color: var(--text);
-  background: url("/assets/ui/button.png") center / 100% 100% no-repeat;
+  background: url("/Long-Now/assets/ui/button.png") center / 100% 100% no-repeat;
   border: none;
   border-radius: 3px;
   padding: 9px 16px;

@@ -36,7 +36,7 @@ export default function CentralView() {
     if (event) body = <EventView event={event} />;
   } else if (sel?.kind === "log") {
     body = <StationLogView />;
-    scene = "/assets/rooms/log.png";
+    scene = "/Long-Now/assets/rooms/log.png";
   }
 
   const scrollStyle: CSSProperties | undefined = scene
