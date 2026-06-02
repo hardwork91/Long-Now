@@ -1,0 +1,225 @@
+/* ============================================================
+   Long Now — submarine-real HUD theme (GDD §9.5)
+   dark painted metal, sepia, brass, riveted plates
+   ============================================================ */
+
+:root {
+  --bg-0: #15110c;
+  --bg-1: #1e1812;
+  --panel: #271f17;
+  --panel-2: #2f261c;
+  --panel-raised: #362c20;
+  --edge: #0c0a07;
+  --rivet: #4a3d2c;
+  --border: #483a28;
+  --border-lit: #6b5739;
+
+  --brass: #c79a3e;
+  --brass-lit: #e6c469;
+  --text: #d9ccae;
+  --text-dim: #93805d;
+  --text-faint: #6a5a40;
+
+  --ok: #8a9c4a;
+  --warn: #d29a3a;
+  --crit: #c5482f;
+  --crit-glow: #ff5a39;
+
+  --energy: #d9a441;
+  --hunger: #d07a3c;
+  --health: #9bb04a;
+  --morale: #5fb6c0;
+
+  --grime: rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+  font-family: "Segoe UI", "Arial Narrow", system-ui, sans-serif;
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: radial-gradient(circle at 50% 0%, #221b13 0%, var(--bg-0) 70%);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Container surface — solid fill + metal frame built from the 9-slice
+   (corner.png rotated for the 4 corners + frame.png for the 4 sides). */
+.metal {
+  background-color: #2b2922;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+/* the metal frame is drawn ON TOP of the panel edges (overlay), so it does not
+   push the content inward like a real border would */
+.metal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 10px solid transparent;
+  border-image: url("/assets/ui/frame9.png") 36 / 10px / 0 repeat;
+  border-radius: 5px;
+  z-index: 5;
+}
+
+.label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 700;
+}
+
+.title-stencil {
+  font-family: "Impact", "Arial Narrow Bold", "Segoe UI", sans-serif;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+h1, h2, h3, h4 { margin: 0; font-weight: 700; }
+
+button {
+  font-family: inherit;
+  color: var(--text);
+  background: url("/assets/ui/button.png") center / 100% 100% no-repeat;
+  border: none;
+  border-radius: 3px;
+  padding: 9px 16px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+button:hover {
+  color: var(--brass-lit);
+  filter: brightness(1.15);
+}
+button:active { transform: translateY(1px); }
+button:disabled { opacity: 0.5; cursor: default; filter: none; }
+button.primary {
+  color: var(--brass-lit);
+}
+
+/* ---------- stat bars (crew) ---------- */
+.statbar {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0;
+}
+.statbar .label { font-size: 9px; letter-spacing: 1px; }
+.statbar.statbar-icon { grid-template-columns: 16px 1fr; gap: 5px; }
+.statbar .sb-icon { font-size: 11px; line-height: 1; text-align: center; }
+.statbar .track {
+  height: 7px;
+  background: #100c08;
+  border: 1px solid #000;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px #000;
+}
+.statbar .fill {
+  height: 100%;
+  border-radius: 1px;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* ---------- slots ---------- */
+.slot {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px dashed var(--border-lit);
+  background: #16110b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 18px;
+  color: var(--text-faint);
+}
+.slot.filled {
+  border-style: solid;
+  background: linear-gradient(180deg, #2c2316, #1c1610);
+  color: var(--text);
+}
+.slot.locked {
+  border-style: solid;
+  border-color: #322a1e;
+  color: #4a3d2c;
+  background: #120e09;
+}
+.slot.droppable,
+.slot.pending {
+  border-color: var(--brass);
+  box-shadow: 0 0 10px rgba(199, 154, 62, 0.45);
+  background: #241c10;
+}
+.slot.pending {
+  animation: pendingpulse 1s infinite;
+}
+@keyframes pendingpulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(199, 154, 62, 0.4); }
+  50% { box-shadow: 0 0 16px rgba(230, 196, 105, 0.7); }
+}
+
+/* remove-crew (×) button on a filled slot */
+.slot-remove {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 19px;
+  height: 19px;
+  padding: 0;
+  border-radius: 50%;
+  background: #2a201a;
+  border: 1px solid var(--border-lit);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.slot-remove:hover {
+  background: var(--crit);
+  border-color: var(--crit);
+  color: #fff;
+  filter: none;
+}
+
+/* avatar disc */
+.avatar {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #16110b;
+  letter-spacing: 0;
+  flex: none;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--edge); }
+::-webkit-scrollbar-thumb { background: var(--border-lit); border-radius: 4px; }
