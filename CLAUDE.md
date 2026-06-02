@@ -15,4 +15,5 @@
   - `public/assets/ui/frame9.png` is a generated 9-slice (from `corner.png` + `frame.png`) used for all container borders.
 
 ## Canonical room types (English display names)
-Power · Reactor · O₂ Generation · Food Production · Water Generation · Habitat · Workshop-Airlock · Infirmary-Lab
+Power · Reactor · O₂ Generation · Food Production · Water Generation · Habitat · Workshop · Infirmary-Lab · Exploration Bay
+- The **Exploration Bay** is its own room (the airlock/expedition function — no longer part of the Workshop). It is reached via the sonar, not the rooms sidebar.

@@ -1,17 +1,16 @@
 import { useEffect } from "react";
 import "./App.css";
-import { GameProvider, useDispatch, useGame } from "./store";
+import { GameProvider, useDispatch, useGame, TICK_MS } from "./store";
 import Header from "./components/Header";
 import CrewStrip from "./components/CrewStrip";
 import LeftPanel from "./components/LeftPanel";
 import CentralView from "./components/CentralView";
 import RoomsSidebar from "./components/RoomsSidebar";
-import ResourceBar from "./components/ResourceBar";
 
 function Ticker() {
   const dispatch = useDispatch();
   useEffect(() => {
-    const id = setInterval(() => dispatch({ type: "TICK" }), 1000);
+    const id = setInterval(() => dispatch({ type: "TICK" }), TICK_MS);
     return () => clearInterval(id);
   }, [dispatch]);
   return null;
@@ -29,7 +28,6 @@ function HUD() {
       <LeftPanel />
       <CentralView />
       <RoomsSidebar />
-      <ResourceBar />
       <Ticker />
       {/* full-screen flat red overlay — kept but disabled; only the vignette is used */}
       {false && <div className="screen-alert-overlay" />}

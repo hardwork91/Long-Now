@@ -79,9 +79,11 @@ export default function RoomsSidebar() {
         <span className="label">Station Rooms</span>
       </div>
       <div className="scroll" style={{ padding: 0 }}>
-        {rooms.map((r) => (
-          <RoomRow key={r.id} room={r} />
-        ))}
+        {rooms
+          .filter((r) => !r.hidden && r.id !== "exploration")
+          .map((r) => (
+            <RoomRow key={r.id} room={r} />
+          ))}
       </div>
     </div>
   );

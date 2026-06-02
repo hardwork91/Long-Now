@@ -1,4 +1,20 @@
-import type { GameStateData } from "./types";
+import type { GameEvent, GameStateData, Item } from "./types";
+
+/** Item catalog (icons are emoji placeholders until art exists). */
+export const ITEM_CATALOG: Record<string, Item> = {
+  scrap_coil: { id: "scrap_coil", name: "Scrap Coil", icon: "🔩", desc: "Salvaged copper coil. A common component in basic repairs and upgrades." },
+  rusted_valve: { id: "rusted_valve", name: "Rusted Valve", icon: "🛠️", desc: "Still holds pressure — barely. Useful for water and reactor plumbing." },
+  biolab_cultures: { id: "biolab_cultures", name: "Bio-Lab Cultures", icon: "🧫", desc: "Living cultures recovered from a deep-sea wreck. Required to run a Biological lab." },
+  power_cell: { id: "power_cell", name: "Power Cell", icon: "🔋", desc: "A pre-Collapse energy cell, still holding a charge. Powers high-end upgrades." },
+  circuit_board: { id: "circuit_board", name: "Circuit Board", icon: "🔌", desc: "Intact control board. The brains of automated systems." },
+  pressure_gauge: { id: "pressure_gauge", name: "Pressure Gauge", icon: "⏲️", desc: "Reads true. Vital for reactor and desalinator calibration." },
+  seed_stock: { id: "seed_stock", name: "Seed Stock", icon: "🌱", desc: "Viable seeds in a sealed tin. The start of a real harvest." },
+  glass_vials: { id: "glass_vials", name: "Glass Vials", icon: "🧪", desc: "Unbroken lab glassware. Hard to make, easy to need." },
+  oxygen_candle: { id: "oxygen_candle", name: "Oxygen Candle", icon: "🕯️", desc: "Chemical O₂ source for emergencies. Burns once." },
+  copper_spool: { id: "copper_spool", name: "Copper Spool", icon: "🧵", desc: "Clean copper wire. Used in heavier electrical work." },
+  spare_gears: { id: "spare_gears", name: "Spare Gears", icon: "🔧", desc: "Machined gears in good shape. Keep the workshop turning." },
+  filter_membrane: { id: "filter_membrane", name: "Filter Membrane", icon: "🧽", desc: "Fine membrane for scrubbing water and air." },
+};
 
 // Distinct crew accent colours (GDD §5.4)
 const ACCENT = {
@@ -12,10 +28,169 @@ const ACCENT = {
   steel: "#9a8f7a",
 };
 
+/** Order in which rooms are unlocked through the guided build sequence. */
+export const BUILD_SEQUENCE = ["o2", "water", "food", "habitat", "workshop", "infirmary"];
+
+/** Unlock (build/reactivate) events — one per room in the sequence. */
+export const UNLOCK_EVENTS: Record<string, GameEvent> = {
+  o2: {
+    id: "unlock-o2",
+    family: "D",
+    title: "«The air is going stale»",
+    description:
+      "Mara: «The O₂ plant is dead. We have to bring it back online before the air runs out.»",
+    severity: "high",
+    body: "cards",
+    responseWindow: 99999,
+    unlocksRoom: "o2",
+    cards: [
+      {
+        title: "Reactivate O₂ Plant",
+        desc: "Adds the O₂ Generation room (undeveloped). Build it to restore breathable air.",
+        cost: "—",
+      },
+    ],
+  },
+  water: {
+    id: "unlock-water",
+    family: "D",
+    title: "«We're down to the last clean water»",
+    description:
+      "Griff: «The desalinator's just sitting there rusting. Get it running or we're drinking bilge.»",
+    severity: "med",
+    body: "cards",
+    responseWindow: 99999,
+    unlocksRoom: "water",
+    cards: [
+      {
+        title: "Reactivate Desalinator",
+        desc: "Adds the Water Generation room (undeveloped).",
+        cost: "—",
+      },
+    ],
+  },
+  food: {
+    id: "unlock-food",
+    family: "D",
+    title: "«The stores won't last»",
+    description: "Samir: «We need to grow our own. Give me a garden and I'll keep us fed.»",
+    severity: "med",
+    body: "cards",
+    responseWindow: 99999,
+    unlocksRoom: "food",
+    cards: [
+      {
+        title: "Build Hydroponics Garden",
+        desc: "Adds the Food Production room (undeveloped).",
+        cost: "—",
+      },
+    ],
+  },
+  habitat: {
+    id: "unlock-habitat",
+    family: "D",
+    title: "«The crew needs somewhere to rest»",
+    description: "Mira: «People are sleeping on the deck. Open the habitat before morale cracks.»",
+    severity: "med",
+    body: "cards",
+    responseWindow: 99999,
+    unlocksRoom: "habitat",
+    cards: [
+      { title: "Open the Habitat", desc: "Adds the Habitat (undeveloped).", cost: "—" },
+    ],
+  },
+  workshop: {
+    id: "unlock-workshop",
+    family: "D",
+    title: "«Half the gear is broken»",
+    description: "Bjorn: «Give me a workshop and I'll fix what's bent before it breaks for good.»",
+    severity: "med",
+    body: "cards",
+    responseWindow: 99999,
+    unlocksRoom: "workshop",
+    cards: [
+      {
+        title: "Restore the Workshop",
+        desc: "Adds the Workshop (undeveloped).",
+        cost: "—",
+      },
+    ],
+  },
+  infirmary: {
+    id: "unlock-infirmary",
+    family: "D",
+    title: "«We can't treat the wounded»",
+    description: "Elias: «One bad accident and we lose someone for nothing. We need an infirmary.»",
+    severity: "med",
+    body: "cards",
+    responseWindow: 99999,
+    unlocksRoom: "infirmary",
+    cards: [
+      { title: "Build the Infirmary-Lab", desc: "Adds the Infirmary-Lab (undeveloped).", cost: "—" },
+    ],
+  },
+  // Not part of the guided build chain — fired by the TICK when Salvage runs low.
+  exploration: {
+    id: "unlock-exploration",
+    family: "B",
+    title: "«Salvage is running low»",
+    description:
+      "Cole: «We're scraping the bottom of the Salvage bins. The exploration bay is wrecked — fix it and I'll bring more back.»",
+    severity: "med",
+    body: "cards",
+    responseWindow: 99999,
+    unlocksRoom: "exploration",
+    cards: [
+      {
+        title: "Repair the Exploration Bay",
+        desc: "Reveals the wrecked Exploration Bay. Repair it to send crew out for Salvage.",
+        cost: "—",
+      },
+    ],
+  },
+};
+
+/**
+ * The starting O₂ plant already exists but is broken. Which variant it was —
+ * Algae or Electrolysis — is pre-decided at world generation; the player does
+ * NOT choose it, they only rebuild what is already there. The variant only
+ * changes the art (the broken `*-old.png` scene and the built scene) and the
+ * single available build option — all the build/run logic stays the same.
+ *
+ * For now we always start with Algae. To randomize later, pick a key at random.
+ */
+type O2VariantKey = "algae" | "electrolysis";
+const O2_VARIANTS: Record<
+  O2VariantKey,
+  { variant: string; label: string; desc: string; consumes: string; sceneBase: string; oldScene: string }
+> = {
+  algae: {
+    variant: "Algae",
+    label: "Algae",
+    desc: "Algae bioreactor — steady O₂ from water + light.",
+    consumes: "Water + light",
+    sceneBase: "/Long-Now/assets/rooms/algae",
+    oldScene: "/Long-Now/assets/rooms/algae-old.png",
+  },
+  electrolysis: {
+    variant: "Electrolysis",
+    label: "Electrolysis",
+    desc: "Splits water into breathable O₂ — power-hungry but compact.",
+    consumes: "Power + Water",
+    sceneBase: "/Long-Now/assets/rooms/electrolysis",
+    oldScene: "/Long-Now/assets/rooms/electrolysis-old.png",
+  },
+};
+// pre-decided variant (will be randomized later) — always Algae for now.
+const O2_VARIANT: O2VariantKey = "algae";
+const o2v = O2_VARIANTS[O2_VARIANT];
+
 export const initialState: GameStateData = {
   day: 42,
   clock: "18:47",
-  vitals: { oxygen: 64, power: 71, hull: 78 },
+  // cold-open: only the reactor is online; the air sealed in the station starts
+  // at 100% and slowly falls until an O₂ plant is producing.
+  vitals: { oxygen: 100, power: 71, hull: 78 },
   resources: { food: 164, water: 236, salvage: 782, med: 38 },
 
   crew: [
@@ -26,7 +201,7 @@ export const initialState: GameStateData = {
       accent: ACCENT.amber,
       traits: ["Diligent", "Compassionate", "Stubborn"],
       background:
-        "Before the Collapse, a botanist and researcher in agricultural systems. Has kept the crops alive through countless crises.",
+        "Born and raised aboard the station, generations after the Collapse. Learned botany from salvaged manuals and the elders before her; keeps the crops alive through every crisis.",
       portrait: "/Long-Now/assets/crew/character1.png",
       history: [
         { with: "Dr. Elias Vance", text: "We argued for a week about nutrient ratios. He was right. I still won't admit it." },
@@ -103,10 +278,9 @@ export const initialState: GameStateData = {
       role: "Fisher",
       accent: ACCENT.blue,
       traits: ["Resilient"],
-      background: "Worked the drowned coasts before MARA. Reads the water like a book.",
+      background: "Knows the drowned coasts well; reads the water like a book.",
       portrait: "/Long-Now/assets/crew/character7.png",
       state: { energy: 64, hunger: 40, health: 80, morale: 66 },
-      exploringReturnsIn: 4 * 3600 + 12 * 60 + 30,
     },
     {
       id: "cole",
@@ -117,8 +291,6 @@ export const initialState: GameStateData = {
       background: "Survives where others can't. Brings back salvage and rumors.",
       portrait: "/Long-Now/assets/crew/character8.png",
       state: { energy: 70, hunger: 55, health: 62, morale: 48 },
-      // single expedition party — same return time as the others exploring
-      exploringReturnsIn: 4 * 3600 + 12 * 60 + 30,
     },
   ],
   emptyCrewSlots: 1,
@@ -130,6 +302,7 @@ export const initialState: GameStateData = {
       short: "REACTOR",
       accent: "#c2502f",
       level: 1,
+      maxLevel: 3,
       produces: "Power",
       consumes: "—",
       sceneBase: "/Long-Now/assets/rooms/generator",
@@ -147,17 +320,70 @@ export const initialState: GameStateData = {
       short: "O₂",
       accent: "#5fb6c0",
       level: 1,
-      variant: "Algae",
+      maxLevel: 3,
+      // pre-decided broken plant — variant fixed at world-gen (Algae for now)
+      variant: o2v.variant,
       produces: "O₂",
-      consumes: "Water + light",
-      sceneBase: "/Long-Now/assets/rooms/algae",
+      consumes: o2v.consumes,
+      sceneBase: o2v.sceneBase,
       sceneLevels: 3,
+      unbuiltScene: o2v.oldScene,
+      buildOptions: [
+        {
+          key: O2_VARIANT,
+          label: o2v.label,
+          desc: o2v.desc,
+          consumes: o2v.consumes,
+          production: "O₂ ++",
+          materialCost: 120,
+          crewNeeded: 1,
+          buildTime: 8,
+          sceneBase: o2v.sceneBase,
+          sceneLevels: 3,
+        },
+      ],
       workSlots: [],
       upgradeSlots: [null],
       lockedWork: 0,
       lockedUpgrade: 1,
-      developed: true,
+      developed: false,
+      hidden: true,
       cycle: 55,
+    },
+    {
+      id: "water",
+      name: "Water Generation",
+      short: "DESALINATOR",
+      accent: "#4f8fc0",
+      level: 1,
+      variant: "Desalinator",
+      produces: "Water",
+      consumes: "Power",
+      sceneBase: "/Long-Now/assets/rooms/desalination",
+      sceneLevels: 3,
+      // pre-existing but broken desalinator — broken-plant art while unbuilt
+      unbuiltScene: "/Long-Now/assets/rooms/desalination-old.png",
+      buildOptions: [
+        {
+          key: "desal",
+          label: "Desalinator",
+          desc: "Pulls fresh water from the sea. Power-hungry.",
+          consumes: "Power",
+          production: "Water ++",
+          materialCost: 120,
+          crewNeeded: 1,
+          buildTime: 8,
+          sceneBase: "/Long-Now/assets/rooms/desalination",
+          sceneLevels: 3,
+        },
+      ],
+      workSlots: [null],
+      upgradeSlots: [null],
+      lockedWork: 1,
+      lockedUpgrade: 1,
+      developed: false,
+      hidden: true,
+      cycle: 41,
     },
     {
       id: "food",
@@ -165,16 +391,46 @@ export const initialState: GameStateData = {
       short: "FOOD",
       accent: "#9bb04a",
       level: 1,
+      maxLevel: 3,
       variant: "Garden · Hydroponics",
       produces: "Food",
       consumes: "Water + light",
       sceneBase: "/Long-Now/assets/rooms/hydroponics",
       sceneLevels: 3,
-      workSlots: ["mara", null, null],
+      buildOptions: [
+        {
+          key: "hydro",
+          label: "Hydroponics",
+          desc: "Soil-less garden — fast yield, thirsty for water.",
+          consumes: "Water + light",
+          production: "Food ++",
+          materialCost: 100,
+          crewNeeded: 1,
+          buildTime: 8,
+          sceneBase: "/Long-Now/assets/rooms/hydroponics",
+          sceneLevels: 3,
+          renamesRoom: true,
+        },
+        {
+          key: "insect",
+          label: "Insect Farm",
+          desc: "Protein-rich larvae on organic scrap — frugal with water, steady yield.",
+          consumes: "Organic scrap + Power",
+          production: "Food ++ (protein)",
+          materialCost: 90,
+          crewNeeded: 1,
+          buildTime: 8,
+          sceneBase: "/Long-Now/assets/rooms/bug",
+          sceneLevels: 3,
+          renamesRoom: true,
+        },
+      ],
+      workSlots: [null, null, null],
       upgradeSlots: [null],
       lockedWork: 0,
       lockedUpgrade: 1,
-      developed: true,
+      developed: false,
+      hidden: true,
       cycle: 72,
     },
     {
@@ -188,6 +444,21 @@ export const initialState: GameStateData = {
       consumes: "Power + Salvage",
       sceneBase: "/Long-Now/assets/rooms/pisifactory",
       sceneLevels: 2,
+      buildOptions: [
+        {
+          key: "pisc",
+          label: "Piscifactoría",
+          desc: "Fish farm — feeds the crew from the deep.",
+          consumes: "Power + Salvage",
+          production: "Food +",
+          materialCost: 140,
+          crewNeeded: 1,
+          buildTime: 9,
+          sceneBase: "/Long-Now/assets/rooms/pisifactory",
+          sceneLevels: 2,
+          renamesRoom: true,
+        },
+      ],
       specGateLevel: 2,
       specChoices: [
         {
@@ -211,26 +482,9 @@ export const initialState: GameStateData = {
       upgradeSlots: [null],
       lockedWork: 0,
       lockedUpgrade: 1,
-      developed: true,
+      developed: false,
+      hidden: true,
       cycle: 20,
-    },
-    {
-      id: "water",
-      name: "Water Generation",
-      short: "DESALINATOR",
-      accent: "#4f8fc0",
-      level: 1,
-      variant: "Desalinator",
-      produces: "Water",
-      consumes: "Power",
-      sceneBase: "/Long-Now/assets/rooms/desalination",
-      sceneLevels: 3,
-      workSlots: ["mira"],
-      upgradeSlots: [null],
-      lockedWork: 1,
-      lockedUpgrade: 1,
-      developed: true,
-      cycle: 41,
     },
     {
       id: "habitat",
@@ -242,28 +496,58 @@ export const initialState: GameStateData = {
       consumes: "Food (when eating)",
       sceneBase: "/Long-Now/assets/rooms/habitat",
       sceneLevels: 1,
+      buildOptions: [
+        {
+          key: "hab",
+          label: "Habitat",
+          desc: "Bunks + galley — crew rest and eat here.",
+          consumes: "Food (when eating)",
+          production: "Rest / Meals",
+          materialCost: 80,
+          crewNeeded: 1,
+          buildTime: 6,
+          sceneBase: "/Long-Now/assets/rooms/habitat",
+          sceneLevels: 1,
+        },
+      ],
       workSlots: [null, null],
       upgradeSlots: [null],
       lockedWork: 1,
       lockedUpgrade: 1,
-      developed: true,
+      developed: false,
+      hidden: true,
       cycle: 0,
     },
     {
       id: "workshop",
-      name: "Workshop-Airlock",
+      name: "Workshop",
       short: "WORKSHOP",
       accent: "#d07a3c",
       level: 1,
-      produces: "Repair / Expedition",
+      produces: "Repair / Fabrication",
       consumes: "Salvage",
       sceneBase: "/Long-Now/assets/rooms/workshop",
       sceneLevels: 3,
-      workSlots: ["griff"],
+      buildOptions: [
+        {
+          key: "ws",
+          label: "Workshop",
+          desc: "Repairs and fabrication.",
+          consumes: "Salvage",
+          production: "Repair / Fabrication",
+          materialCost: 120,
+          crewNeeded: 1,
+          buildTime: 8,
+          sceneBase: "/Long-Now/assets/rooms/workshop",
+          sceneLevels: 3,
+        },
+      ],
+      workSlots: [null],
       upgradeSlots: [null, null],
       lockedWork: 1,
       lockedUpgrade: 1,
-      developed: true,
+      developed: false,
+      hidden: true,
       cycle: 0,
     },
     {
@@ -272,78 +556,109 @@ export const initialState: GameStateData = {
       short: "INFIRMARY-LAB",
       accent: "#b06aa0",
       level: 1,
-      variant: "Biological",
       produces: "Healing / Research",
       consumes: "Med",
       sceneBase: "/Long-Now/assets/rooms/infirmary",
       sceneLevels: 1,
+      buildOptions: [
+        {
+          key: "eng",
+          label: "Engineering",
+          desc: "Research biased to O₂/Water/Reactor efficiency; heals adequately.",
+          consumes: "Med",
+          production: "Heal / Research",
+          materialCost: 150,
+          crewNeeded: 1,
+          buildTime: 8,
+          sceneBase: "/Long-Now/assets/rooms/infirmary",
+          sceneLevels: 1,
+        },
+        {
+          key: "bio",
+          label: "Biological",
+          desc: "Research biased to medicine & disease; heals better.",
+          consumes: "Med",
+          production: "Heal+ / Research",
+          materialCost: 150,
+          crewNeeded: 1,
+          buildTime: 8,
+          requiredItems: ["biolab_cultures"],
+          sceneBase: "/Long-Now/assets/rooms/infirmary",
+          sceneLevels: 1,
+        },
+      ],
       workSlots: [null, null],
-      upgradeSlots: [],
+      upgradeSlots: [null],
       lockedWork: 0,
-      lockedUpgrade: 2,
+      lockedUpgrade: 1,
       developed: false,
+      hidden: true,
+      cycle: 0,
+    },
+    {
+      // The exploration bay is its own room: wrecked at start, revealed by a
+      // "Salvage running low" notification, then repaired here. Once developed,
+      // its central view is the expedition planner (not normal work slots).
+      // Reached via the sonar — kept OUT of the rooms sidebar.
+      id: "exploration",
+      name: "Exploration Bay",
+      short: "EXPLORATION",
+      accent: "#c79a3e",
+      level: 1,
+      produces: "Expeditions",
+      consumes: "—",
+      sceneBase: "/Long-Now/assets/rooms/explore",
+      sceneLevels: 1,
+      unbuiltScene: "/Long-Now/assets/rooms/explore-old.png",
+      buildOptions: [
+        {
+          key: "explore",
+          label: "Exploration Bay",
+          desc: "Repair the airlock and expedition gear so crew can go outside for Salvage.",
+          consumes: "—",
+          production: "Expeditions",
+          materialCost: 40,
+          crewNeeded: 1,
+          buildTime: 6,
+          sceneBase: "/Long-Now/assets/rooms/explore",
+          sceneLevels: 1,
+        },
+      ],
+      workSlots: [],
+      upgradeSlots: [null],
+      lockedWork: 0,
+      lockedUpgrade: 1,
+      developed: false,
+      hidden: true,
       cycle: 0,
     },
   ],
 
-  events: [
-    {
-      id: "fire",
-      family: "A",
-      title: "FIRE — Machine Room",
-      description:
-        "A short circuit set the machine room ablaze. The hull takes damage each tick and the fire will spread if left unchecked.",
-      severity: "high",
-      body: "posts",
-      responseWindow: 95,
-      posts: [
-        { label: "Water pumps", mitigates: "Speeds extinguishing", crewId: null },
-        { label: "On the fire", mitigates: "Puts out the blaze (Health risk)", crewId: null },
-        { label: "Tend the wounded", mitigates: "Prevents deaths", crewId: null },
-      ],
-    },
-    {
-      id: "lowfood",
-      family: "A",
-      title: "LOW FOOD SUPPLY",
-      description: "Rations have fallen below the safe threshold.",
-      severity: "med",
-      body: "posts",
-      responseWindow: 240,
-      posts: [{ label: "Reassign to farming", mitigates: "Boosts output", crewId: null }],
-    },
-    {
-      id: "build-o2",
-      family: "D",
-      title: "«The air is going stale»",
-      description:
-        "Mara: «The O₂ generator can barely breathe. If we don't get it running soon, the station's air won't hold.» — Build / reactivate a room.",
-      severity: "med",
-      body: "cards",
-      responseWindow: 600,
-      cards: [
-        {
-          title: "Algae",
-          desc: "Algae bioreactor. Consumes Water + light. Steady output.",
-          cost: "Salvage 120 · 1 tech",
-        },
-        {
-          title: "Electrolysis",
-          desc: "Splits water with electricity. Consumes heavy Power + Water.",
-          cost: "Salvage 150 · 1 tech",
-        },
-      ],
-    },
-  ],
+  events: [UNLOCK_EVENTS.o2],
 
   log: [
-    { time: "18:32", text: "Hypoxia resolved in the Habitat." },
-    { time: "18:11", text: "Crew returned from expedition (Workshop-Airlock)." },
-    { time: "17:48", text: "Discovered: rusted valve." },
-    { time: "17:22", text: "Hull breach in Sector C-3." },
-    { time: "16:59", text: "Workshop upgrade research complete." },
+    { time: "18:47", text: "Reactor online. Air systems offline — bring the O₂ plant back." },
   ],
 
-  selection: { kind: "room", id: "food" },
+  selection: { kind: "room", id: "reactor" },
   pendingSlot: null,
+  inventory: [
+    "scrap_coil",
+    "rusted_valve",
+    "power_cell",
+    "circuit_board",
+    "pressure_gauge",
+    "seed_stock",
+    "glass_vials",
+    "copper_spool",
+  ],
+  consumed: [
+    { id: "spare_gears", roomId: "", where: "Reactor — initial repair" },
+    { id: "filter_membrane", roomId: "", where: "Air scrubber patch" },
+    { id: "oxygen_candle", roomId: "", where: "Emergency O₂ (Day 41)" },
+  ],
+  // exploration starts WRECKED — no party out; the Exploration Bay is revealed by
+  // the low-Salvage notification and repaired in its own view.
+  expedition: null,
+  expeditionParty: [null, null],
 };

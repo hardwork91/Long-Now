@@ -104,9 +104,13 @@ export default function EventView({ event }: { event: GameEvent }) {
                 <div className="ccost">{c.cost}</div>
                 <button
                   className="primary"
-                  onClick={() => dispatch({ type: "RESOLVE_EVENT", eventId: event.id })}
+                  onClick={() =>
+                    event.unlocksRoom
+                      ? dispatch({ type: "UNLOCK_ROOM", roomId: event.unlocksRoom })
+                      : dispatch({ type: "RESOLVE_EVENT", eventId: event.id })
+                  }
                 >
-                  Develop
+                  {event.unlocksRoom ? "Build" : "Develop"}
                 </button>
               </div>
             ))}

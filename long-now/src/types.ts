@@ -41,6 +41,46 @@ export interface SpecChoice {
   sceneLevels: number;
 }
 
+/** A construction option panel (variant / spec / single build). */
+export interface BuildOption {
+  key: string;
+  /** resulting room/variant name (shown; becomes room name if renamesRoom) */
+  label: string;
+  desc: string;
+  consumes: string;
+  /** production index, placeholder string for now */
+  production: string;
+  /** Salvage cost, charged when construction starts */
+  materialCost: number;
+  /** crew required in the panel's slots (1 or 2) — not a speed-up, a requirement */
+  crewNeeded: number;
+  /** ticks to complete construction (placeholder until tuned) */
+  buildTime: number;
+  /** item ids required (must be owned) to enable Build */
+  requiredItems?: string[];
+  /** art of the resulting built room */
+  sceneBase: string;
+  sceneLevels: number;
+  /** if true, the built room takes this option's label as its name */
+  renamesRoom?: boolean;
+}
+
+export interface Item {
+  id: string;
+  name: string;
+  icon: string;
+  desc: string;
+}
+
+/** an item that has been consumed, with where it was used (for the vault history) */
+export interface ConsumedItem {
+  id: string;
+  /** room id it was consumed by (for refund-on-cancel); "" for pre-game flavour */
+  roomId: string;
+  /** human label of where it was used */
+  where: string;
+}
+
 export interface Room {
   id: string;
   /** canonical room-type display name */
@@ -48,6 +88,8 @@ export interface Room {
   short: string;
   accent: string;
   level: number;
+  /** hard cap on level for this room (defaults to 9 when absent) */
+  maxLevel?: number;
   variant?: string;
   /** chosen specialization key (matches a SpecChoice.key) */
   specialization?: string;
@@ -62,6 +104,9 @@ export interface Room {
   /** optional background-image base for the room scene; the actual file is
    *  `${sceneBase}-${level}.png` so the art changes with the room's level. */
   sceneBase?: string;
+  /** scene shown while the room is still unbuilt, instead of the generic
+   *  `empty.png` (e.g. a pre-existing but broken plant: `*-old.png`). */
+  unbuiltScene?: string;
   /** how many per-level scene images exist (caps which `-N.png` is used) */
   sceneLevels?: number;
   /** crewId or null per open slot */
@@ -72,6 +117,14 @@ export interface Room {
   lockedUpgrade: number;
   /** build-then-develop: while false, Work Slots are locked */
   developed: boolean;
+  /** not yet revealed in the station (unlocked later via events) */
+  hidden?: boolean;
+  /** construction option panels shown while unbuilt (variants, or a single build) */
+  buildOptions?: BuildOption[];
+  /** crew assigned per build option while choosing (optionKey -> slots) */
+  buildAssign?: Record<string, (string | null)[]>;
+  /** active construction in progress on this room */
+  building?: { optionKey: string; progress: number };
   /** 0..100 production cycle (flavour) */
   cycle: number;
 }
@@ -102,6 +155,8 @@ export interface GameEvent {
   responseWindow: number;
   posts?: EventPost[];
   cards?: EventCard[];
+  /** if set, resolving this event reveals (unlocks) the given room id */
+  unlocksRoom?: string;
 }
 
 export interface LogEntry {
@@ -127,12 +182,24 @@ export type Selection =
   | { kind: "crew"; id: string }
   | { kind: "event"; id: string }
   | { kind: "log" }
+  | { kind: "inventory" }
+  | { kind: "expedition" }
   | null;
+
+/** the single active expedition party (one at a time). */
+export interface Expedition {
+  crewIds: string[];
+  /** ticks until the party returns */
+  returnsIn: number;
+  days: number;
+}
 
 /** the slot currently awaiting a crew pick (click-slot → highlight strip → click crew) */
 export type PendingSlot =
   | { kind: "room"; roomId: string; slotKind: SlotKind; index: number }
   | { kind: "event"; eventId: string; postIndex: number }
+  | { kind: "build"; roomId: string; optionKey: string; index: number }
+  | { kind: "expedition"; index: number }
   | null;
 
 export interface GameStateData {
@@ -147,4 +214,12 @@ export interface GameStateData {
   log: LogEntry[];
   selection: Selection;
   pendingSlot: PendingSlot;
+  /** owned item ids (found in exploration) */
+  inventory: string[];
+  /** consumed items (used up by builds), with where they were used */
+  consumed: ConsumedItem[];
+  /** the single active expedition (null when none is out) */
+  expedition: Expedition | null;
+  /** draft party being assembled in the exploration planner (up to 2 slots) */
+  expeditionParty: (string | null)[];
 }
