@@ -3,6 +3,7 @@ import { useDispatch, useGame } from "../../store";
 import { ITEM_CATALOG } from "../../gameData";
 import DropSlot from "./DropSlot";
 import BuildSlot from "./BuildSlot";
+import ItemIcon from "../ItemIcon";
 
 export default function RoomView({ room }: { room: Room }) {
   const dispatch = useDispatch();
@@ -100,7 +101,7 @@ export default function RoomView({ room }: { room: Room }) {
                           className={`build-item${owned ? "" : " missing"}`}
                           title={`${item?.name ?? it}${owned ? "" : " (not found yet)"}`}
                         >
-                          {item?.icon ?? "❔"}
+                          <ItemIcon id={it} className="build-item-img" />
                         </span>
                       );
                     })}

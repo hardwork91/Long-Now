@@ -525,7 +525,7 @@
 .inv-debug button { font-size: 10px; padding: 6px 10px; }
 
 /* vault — 2 panes: 4-col grid | detail (big icon over name+desc) */
-.vault-layout { display: grid; grid-template-columns: 1fr 320px; gap: 16px; flex: 1 1 auto; min-height: 0; }
+.vault-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; flex: 1 1 auto; min-height: 0; }
 .vault-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
   align-content: start; overflow-y: auto;
@@ -547,6 +547,11 @@
   background: rgba(0,0,0,0.25); min-height: 0;
 }
 .vault-big-icon { font-size: 110px; line-height: 1; }
+/* real item art (falls back to emoji span when missing) */
+.vault-cell-img { width: 68%; height: 68%; object-fit: contain; }
+.vault-big-img { width: 70%; max-height: 240px; object-fit: contain; }
+.inv-debug-img { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; }
+.build-item-img { width: 26px; height: 26px; object-fit: contain; }
 .vault-big-icon.used { filter: grayscale(1) brightness(0.6); }
 .vault-detail-bottom { padding: 14px; }
 .vault-detail-bottom h3 { color: var(--brass-lit); margin-bottom: 6px; }

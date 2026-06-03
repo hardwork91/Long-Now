@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useGame, useDispatch } from "../../store";
 import { ITEM_CATALOG } from "../../gameData";
+import ItemIcon from "../ItemIcon";
 
 export default function InventoryView() {
   const { inventory, consumed } = useGame();
@@ -32,7 +33,7 @@ export default function InventoryView() {
               onClick={() => setSelIdx(i)}
               title={ITEM_CATALOG[c.id]?.name}
             >
-              {ITEM_CATALOG[c.id]?.icon ?? "❔"}
+              <ItemIcon id={c.id} className="vault-cell-img" />
             </button>
           ))}
           {cells.length === 0 && <div className="inv-empty">Vault is empty.</div>}
@@ -43,7 +44,9 @@ export default function InventoryView() {
           {item && sel ? (
             <>
               <div className="vault-detail-top">
-                <div className={`vault-big-icon${sel.used ? " used" : ""}`}>{item.icon}</div>
+                <div className={`vault-big-icon${sel.used ? " used" : ""}`}>
+                  <ItemIcon id={sel.id} className="vault-big-img" />
+                </div>
               </div>
               <div className="vault-detail-bottom">
                 <h3>{item.name}</h3>
@@ -64,7 +67,7 @@ export default function InventoryView() {
           <span className="label">(debug) find item:</span>
           {notFound.map((id) => (
             <button key={id} onClick={() => dispatch({ type: "GRANT_ITEM", itemId: id })}>
-              {ITEM_CATALOG[id]?.icon} {ITEM_CATALOG[id]?.name}
+              <ItemIcon id={id} className="inv-debug-img" /> {ITEM_CATALOG[id]?.name}
             </button>
           ))}
         </div>
